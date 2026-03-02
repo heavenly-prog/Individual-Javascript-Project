@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Subscription Platform for Dealerships | Blinker.com.au</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navbar -->
+    <header id="mainHeader" class="navbar">
+        <div class="content-wrapper navbar-content">
+            <div class="logo">
+                <img src="blinker-logo.png" alt="blinker logo" onclick="showPage('home')" style="cursor: pointer; height: 30px;">
+            </div>
+            <div class="links">
+                <a href="#" class="link" onclick="showPage('home')">Home</a>
+                <a href="#" class="link" onclick="showPage('browse')">Find your car</a>
+                <a href="#" class="btn-contact" onclick="notImplemented()">Contact</a>
+            </div>
+            <div id="phone-nav">
+                <div class="bento-menu" onclick="showMenu()">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="close-btn" onclick="hideMenu()"></div>
+                <div class="showMenu">
+                    <a class="link" href="#" onclick="showPage('home')">Home</a>
+                    <a class="link" href="#" onclick="showPage('browse')">Find your car</a>
+                    <a class="link" href="#" onclick="notImplemented()">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HOME VIEW -->
+    <div id="home-view" class="view active">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>Australia's most awarded car<br>subscription platform</h1>
+                <p>FIND YOUR DREAM CAR WITH <span class="purple-text">BLINKER</span></p>
+                
+                <div class="search-section">
+                    <div class="input-wrapper">
+                        <input type="text" id="mainSearch" placeholder="Search by Model, Make or Keyword">
+                        <div class="loading-bar" id="loadingBar"></div>
+                    </div>
+                    <button class="main-search-btn" id="searchBtn" onclick="executeSearch()"><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="city-illustration-container">
+                    <img src="city-illustration.png" alt="City illustration" class="city-illustration">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BROWSE VIEW -->
+    <div id="browse-view" class="view">
+        <div class="browse-hero">
+            <div class="overlay"></div>
+            <div class="content-wrapper">
+                <div class="browse-content">
+                    <h1>Browse our cars</h1>
+                    <div class="input-wrap">
+                        <input type="text" id="browseSearch" placeholder="Search by Make, Model or Keyword" onkeypress="handleBrowseSearch(event)">
+                        <div class="search-wrapper" onclick="filterBySearch()">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="search">
+            <div class="content-wrapper">
+                <div id="filter">
+                    <h1 class="search-info">
+                        <span class="black-txt">Search results:</span>
+                        <span id="query-display"></span>
+                    </h1>
+
+                    <div class="price-filter">
+                        <h2>
+                            <span class="black-txt">Price range:</span>
+                            <span class="price-display">$0 to $100,000</span>
+                        </h2>
+                        <div class="slider-wrapper">
+                            <input type="range" class="price-slider" min="0" max="100000" value="100000" oninput="updatePrice(this)">
+                        </div>
+                    </div>
+                    
+                    <div class="sort-filter">
+                        <h2 class="black-txt">Sort by:</h2>
+                        <select id="sortDropdown" onchange="handleSort(this.value)" class="sort-dropdown">
+                            <option value="">Default</option>
+                            <option value="name-asc">Alphabetical A to Z</option>
+                            <option value="name-desc">Alphabetical Z to A</option>
+                            <option value="year-desc">Newest to oldest</option>
+                            <option value="year-asc">Oldest to newest</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="cars">
+                    <div class="content-wrapper">
+                        <div id="cars-container"></div>
+                        <div class="empty-state" id="empty-state" style="display: none;">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='%23f0f0f0'/%3E%3Ctext x='100' y='110' text-anchor='middle' font-size='16' fill='%23999'%3ENo results%3C/text%3E%3C/svg%3E" alt="">
+                            <h1>Could not find any matches related to your search.</h1>
+                            <span>Please change the filter or reset it below.</span>
+                            <button onclick="resetFilters()">Reset filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="content-wrapper">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Blinker</h3>
+                    <p>Australia's most awarded car subscription platform, offering flexible and affordable vehicle leasing solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#" onclick="showPage('home')">Home</a></li>
+                        <li><a href="#" onclick="showPage('browse')">Browse Cars</a></li>
+                        <li><a href="#" onclick="notImplemented()">About Us</a></li>
+                        <li><a href="#" onclick="notImplemented()">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p>Email: info@blinker.com.au</p>
+                    <p>Phone: 1300 123 456</p>
+                    <p>Address: Sydney, NSW 2000, Australia</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Blinker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
