@@ -1,4 +1,3 @@
-
 let appState = {
     cars: [],
     filteredCars: [],
@@ -51,15 +50,17 @@ function getMockCars() {
     return [{ id: 1, variant: { year: 2023, make_description: 'Toyota', family_description: 'Camry', body_style: 'Sedan', transmission_type: 'Automatic' }, km: 15000, price: 28500, savings: 2000 }];
 }
 
-/**
- * Render Cars - Optimized to prevent Jitter
- */
 function renderCars(cars) {
     const container = document.getElementById('cars-container');
     const emptyState = document.getElementById('empty-state');
+    const queryDisplay = document.getElementById('query-display');
+    
     if (!container) return;
 
-    // 1. Lock current height to prevent the footer from jumping up
+    if (queryDisplay) {
+        queryDisplay.textContent = appState.searchFilter ? `"${appState.searchFilter}"` : "All Cars";
+    }
+
     const currentHeight = container.offsetHeight;
     if (currentHeight > 0) {
         container.style.minHeight = `${currentHeight}px`;
@@ -73,7 +74,6 @@ function renderCars(cars) {
 
     if (emptyState) emptyState.style.display = 'none';
 
-    // 2. Efficiently update HTML
     container.innerHTML = cars.map(car => `
         <div class="card-wrapper">
             <div class="card no-image-card">
@@ -96,29 +96,29 @@ function renderCars(cars) {
         </div>
     `).join('');
 
-    // 3. Unlock height after a tiny delay so the transition feels natural
     setTimeout(() => {
         container.style.minHeight = "0px";
     }, 300);
 }
 
-/**
- * Filter Logic
- */
 function filterCars() {
-    let filtered = appState.cars;
+    let filtered = [...appState.cars];
 
     if (appState.searchFilter) {
-        const search = appState.searchFilter.toLowerCase();
-        filtered = filtered.filter(car => 
-            `${car.variant.make_description} ${car.variant.family_description}`.toLowerCase().includes(search)
-        );
+        const search = appState.searchFilter.toLowerCase().trim();
+        filtered = filtered.filter(car => {
+            const make = (car.variant.make_description || "").toLowerCase();
+            const model = (car.variant.family_description || "").toLowerCase();
+            return make.includes(search) || model.includes(search);
+        });
     }
 
     filtered = filtered.filter(car => car.price <= appState.priceFilter[1]);
 
     if (appState.sortFilter === 'name-asc') {
         filtered.sort((a, b) => a.variant.make_description.localeCompare(b.variant.make_description));
+    } else if (appState.sortFilter === 'name-desc') {
+        filtered.sort((a, b) => b.variant.make_description.localeCompare(a.variant.make_description));
     }
 
     appState.filteredCars = filtered;
@@ -129,20 +129,32 @@ function formatNumber(num) {
     return new Intl.NumberFormat('en-AU').format(num);
 }
 
-/**
- * UI Actions - Fixed Slider Jitter
- */
+function executeSearch() {
+    const mainInput = document.getElementById('mainSearch');
+    appState.searchFilter = mainInput.value;
+    showPage('browse');
+    filterCars();
+}
+
+function handleBrowseSearch(event) {
+    if (event.key === 'Enter') {
+        filterBySearch();
+    }
+}
+
+function filterBySearch() {
+    const browseInput = document.getElementById('browseSearch');
+    appState.searchFilter = browseInput.value;
+    filterCars();
+}
+
 function updatePrice(slider) {
     const price = parseInt(slider.value);
     appState.priceFilter[1] = price;
-    
     const display = document.querySelector('.price-display');
     if (display) display.textContent = `$0 to $${formatNumber(price)}`;
     
-    // DEBOUNCE: Clear previous timer if we are still sliding
     clearTimeout(appState.debounceTimer);
-    
-    // Only run the heavy filter function after 50ms of "silence" from the slider
     appState.debounceTimer = setTimeout(() => {
         filterCars();
     }, 50);
@@ -153,15 +165,33 @@ function handleSort(sortValue) {
     filterCars();
 }
 
+function resetFilters() {
+    appState.searchFilter = '';
+    appState.priceFilter[1] = 100000;
+    
+    const browseInput = document.getElementById('browseSearch');
+    const mainInput = document.getElementById('mainSearch');
+    const slider = document.querySelector('.price-slider');
+    const priceDisplay = document.querySelector('.price-display');
+    
+    if (browseInput) browseInput.value = '';
+    if (mainInput) mainInput.value = '';
+    if (slider) slider.value = 100000;
+    if (priceDisplay) priceDisplay.textContent = `$0 to $100,000`;
+    
+    filterCars();
+}
+
 function showPage(pageId) {
     document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
     const viewEl = document.getElementById(`${pageId}-view`);
     if (viewEl) viewEl.classList.add('active');
     appState.currentPage = pageId;
+    window.scrollTo(0, 0);
 }
 
 function notImplemented() {
-    alert('Technical specifications for this NHTSA model are coming soon!');
+    alert('This feature is coming soon!');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
